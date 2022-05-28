@@ -1,0 +1,26 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Ant brain",
+	"patterns": [
+		{
+			"name": "comment.line.ant",
+			"match": "\\s*;.*"
+		},
+		{
+			"name": "keyword.control.ant",
+			"match": "\\b(Sense|Move|PickUp|Flip|Turn|Drop)\\b"
+		},
+		{
+			"name": "constant.numeric.ant",
+			"match": "\\b\\d+\\b"
+		},
+		{
+			"comment": "TODO: it doesn't work, maybe theme doesn't support this name",
+			"name": "constant.other.ant",
+			"match": "\\b(Ahead|Food)\\b"
+		}
+	],
+	"repository": {
+	},
+	"scopeName": "source.ant"
+}

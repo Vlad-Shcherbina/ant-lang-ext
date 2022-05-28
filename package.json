@@ -1,0 +1,25 @@
+{
+    "name": "ant-lang",
+    "displayName": "ant-lang",
+    "description": "Description of my extension",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.67.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "ant",
+            "aliases": ["Ant brain", "ant"],
+            "extensions": [".ant"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "ant",
+            "scopeName": "source.ant",
+            "path": "./syntaxes/ant.tmLanguage.json"
+        }]
+    }
+}
