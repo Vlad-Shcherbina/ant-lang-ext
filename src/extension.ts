@@ -29,10 +29,33 @@ export function activate(context: vscode.ExtensionContext) {
                 hint.paddingRight = true;
                 hints.push(hint);
             }
-            console.log(hints);
             return hints;
         }
     });
+    context.subscriptions.push(disp);
+
+    disp = vscode.languages.registerDocumentHighlightProvider("ant", {
+        provideDocumentHighlights(document, position, token) {
+            let line = document.lineAt(position).text;
+            let start = position.character;
+            while (start > 0) {
+                let c = line.charAt(start - 1);
+                if (!('0' <= c && c <= '9')) break;
+                start--;
+            }
+            let end = position.character;
+            while (end < line.length) {
+                let c = line.charAt(end);
+                if (!('0' <= c && c <= '9')) break;
+                end++;
+            }
+            if (start < end) {
+                let state = parseInt(line.substring(start, end));
+                return [new vscode.DocumentHighlight(document.lineAt(state).range)];
+            }
+            return null;
+        }
+    })
     context.subscriptions.push(disp);
 }
 
