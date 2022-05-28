@@ -67,6 +67,58 @@ export function activate(context: vscode.ExtensionContext) {
         }
     })
     context.subscriptions.push(disp);
+
+    let dc = vscode.languages.createDiagnosticCollection("ant-diagnostics");
+    context.subscriptions.push(dc);
+    subscribeToDocumentChanges(context, dc);
+}
+
+function subscribeToDocumentChanges(context: vscode.ExtensionContext, dc: vscode.DiagnosticCollection) {
+    console.log('subscribe to doc change');
+    if (vscode.window.activeTextEditor) {
+        refreshDiagnostics(vscode.window.activeTextEditor.document, dc);
+    }
+    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(editor => {
+        if (editor) {
+            refreshDiagnostics(editor.document, dc);
+        }
+    }));
+    context.subscriptions.push(
+		vscode.workspace.onDidChangeTextDocument(e => refreshDiagnostics(e.document, dc))
+	);
+	context.subscriptions.push(
+		vscode.workspace.onDidCloseTextDocument(doc => dc.delete(doc.uri))
+	);
+}
+
+function refreshDiagnostics(document: vscode.TextDocument, dc: vscode.DiagnosticCollection) {
+    if (document.languageId !== 'ant') {
+        return;
+    }
+    let diagnostics = [];
+    for (let i = 0; i < document.lineCount; i++) {
+        let line = document.lineAt(i).text;
+        if (line === '' && i == document.lineCount - 1) {
+            continue;  // empty last line is not a problem
+        }
+        let parts = line.split(' ');
+        switch (parts[0]) {
+            case "Sense": break;
+            case "Move": break;
+            case "PickUp": break;
+            case "Flip": break;
+            case "Turn": break;
+            case "Drop": break;
+            default: {
+                diagnostics.push(new vscode.Diagnostic(
+                    new vscode.Range(i, 0, i, parts[0].length),
+                    "Unrecognized command",
+                ));
+                break;
+            }
+        }
+    }
+    dc.set(document.uri, diagnostics);
 }
 
 export function deactivate() {
