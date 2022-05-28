@@ -49,11 +49,21 @@ export function activate(context: vscode.ExtensionContext) {
                 if (!('0' <= c && c <= '9')) break;
                 end++;
             }
+            let highlights = [];
             if (start < end) {
                 let state = parseInt(line.substring(start, end));
-                return [new vscode.DocumentHighlight(document.lineAt(state).range)];
+                highlights.push(new vscode.DocumentHighlight(document.lineAt(state).range));
             }
-            return null;
+            let re = new RegExp(`\\b${position.line}\\b`, 'g');
+            for (let i = 0; i < document.lineCount; i++) {
+                let line = document.lineAt(i).text;
+                for (let m of line.matchAll(re)) {
+                    let pos = new vscode.Position(i, m.index!);
+                    highlights.push(new vscode.DocumentHighlight(new vscode.Range(
+                        pos, pos.translate(0, m[0].length))));
+                }
+            }
+            return highlights;
         }
     })
     context.subscriptions.push(disp);
