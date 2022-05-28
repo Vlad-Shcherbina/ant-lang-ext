@@ -9,17 +9,34 @@
     "categories": [
         "Programming Languages"
     ],
+    "activationEvents": [
+        "onLanguage:ant"
+    ],
+    "main": "./out/extension.js",
     "contributes": {
-        "languages": [{
-            "id": "ant",
-            "aliases": ["Ant brain", "ant"],
-            "extensions": [".ant"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "ant",
-            "scopeName": "source.ant",
-            "path": "./syntaxes/ant.tmLanguage.json"
-        }]
+        "languages": [
+            {
+                "id": "ant",
+                "aliases": [
+                    "Ant brain",
+                    "ant"
+                ],
+                "extensions": [
+                    ".ant"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "ant",
+                "scopeName": "source.ant",
+                "path": "./syntaxes/ant.tmLanguage.json"
+            }
+        ]
+    },
+    "devDependencies": {
+        "@types/node": "^8.10.25",
+        "@types/vscode": "^1.67.0"
     }
 }
