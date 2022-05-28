@@ -68,6 +68,26 @@ export function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(disp);
 
+    disp = vscode.languages.registerCompletionItemProvider('ant', {
+        provideCompletionItems(document, position, token) {
+            let msg = `completion ${position.line}:${position.character}`;
+            vscode.window.setStatusBarMessage(msg);
+            console.log(msg);
+            let result = [];
+            let prefix = document.lineAt(position).text.substring(0, position.character);
+            if (!prefix.includes(' ')) {
+                result.push(new vscode.CompletionItem("Sense"));
+                result.push(new vscode.CompletionItem("Move"));
+                result.push(new vscode.CompletionItem("PickUp"));
+                result.push(new vscode.CompletionItem("Flip"));
+                result.push(new vscode.CompletionItem("Turn"));
+                result.push(new vscode.CompletionItem("Drop"));
+            }
+            return result;
+        }
+    });
+    context.subscriptions.push(disp);
+
     let dc = vscode.languages.createDiagnosticCollection("ant-diagnostics");
     context.subscriptions.push(dc);
     subscribeToDocumentChanges(context, dc);
