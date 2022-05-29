@@ -131,12 +131,9 @@ export function activate(context: vscode.ExtensionContext) {
                     result.push(new vscode.CompletionItem(cmd));
                 }
             } else {
-                console.log(parts);
                 for (let [cmd, args] of grammar) {
-                    if (cmd == parts[0]) {
-                        console.log(args);
+                    if (cmd == parts[0] && parts.length - 2 < args.length) {
                         let q = args[parts.length - 2];
-                        console.log('q', q);
                         if (q.kind == "enum") {
                             for (let v of q.values) {
                                 result.push(new vscode.CompletionItem(v));
