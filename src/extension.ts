@@ -1,5 +1,52 @@
 import * as vscode from 'vscode';
 
+type Place = {
+    kind: "number"
+} | {
+    kind: "enum"
+    values: string[]
+}
+
+const grammar: [string, Place[]][] = [
+    ["Sense", [
+        { kind: "enum", values: ["Here", "Ahead", "LeftAhead", "RightAhead"] },
+        { kind: "number" },
+        { kind: "number" },
+        { kind: "enum", values: [
+            "Friend", "Foe", "FriendWithFood", "FoeWithFood", "Food", "Rock",
+            "Marker",  // TODO: it has an argument: "Marker 1"
+            "FoeMarker", "Home", "FoeHome"]},
+    ]],
+    ["Mark", [
+        { kind: "number" },
+        { kind: "number" },
+    ]],
+    ["Unmark", [
+        { kind: "number" },
+        { kind: "number" },
+    ]],
+    ["PickUp", [
+        { kind: "number" },
+        { kind: "number" },
+    ]],
+    ["Drop", [
+        { kind: "number" },
+    ]],
+    ["Turn", [
+        { kind: "enum", values: ["Left", "Right"] },
+        { kind: "number" },
+    ]],
+    ["Move", [
+        { kind: "number" },
+        { kind: "number" },
+    ]],
+    ["Flip", [
+        { kind: "number" },
+        { kind: "number" },
+        { kind: "number" },
+    ]],
+];
+
 export function activate(context: vscode.ExtensionContext) {
     console.log('Hello, world!');
     let disp = vscode.languages.registerHoverProvider("ant", {
@@ -77,13 +124,26 @@ export function activate(context: vscode.ExtensionContext) {
             console.log(msg);
             let result = [];
             let prefix = document.lineAt(position).text.substring(0, position.character);
-            if (!prefix.includes(' ')) {
-                result.push(new vscode.CompletionItem("Sense"));
-                result.push(new vscode.CompletionItem("Move"));
-                result.push(new vscode.CompletionItem("PickUp"));
-                result.push(new vscode.CompletionItem("Flip"));
-                result.push(new vscode.CompletionItem("Turn"));
-                result.push(new vscode.CompletionItem("Drop"));
+            let parts = prefix.split(' ');
+
+            if (parts.length == 1) {
+                for (let [cmd, args] of grammar) {
+                    result.push(new vscode.CompletionItem(cmd));
+                }
+            } else {
+                console.log(parts);
+                for (let [cmd, args] of grammar) {
+                    if (cmd == parts[0]) {
+                        console.log(args);
+                        let q = args[parts.length - 2];
+                        console.log('q', q);
+                        if (q.kind == "enum") {
+                            for (let v of q.values) {
+                                result.push(new vscode.CompletionItem(v));
+                            }
+                        }
+                    }
+                }
             }
             return result;
         }
@@ -124,20 +184,18 @@ function refreshDiagnostics(document: vscode.TextDocument, dc: vscode.Diagnostic
             continue;  // empty last line is not a problem
         }
         let parts = line.split(' ');
-        switch (parts[0]) {
-            case "Sense": break;
-            case "Move": break;
-            case "PickUp": break;
-            case "Flip": break;
-            case "Turn": break;
-            case "Drop": break;
-            default: {
-                diagnostics.push(new vscode.Diagnostic(
-                    new vscode.Range(i, 0, i, parts[0].length),
-                    "Unrecognized command",
-                ));
+        let found = false;
+        for (let [cmd, args] of grammar) {
+            if (cmd === parts[0]) {
+                found = true;
                 break;
             }
+        }
+        if (!found) {
+            diagnostics.push(new vscode.Diagnostic(
+                new vscode.Range(i, 0, i, parts[0].length),
+                "Unrecognized command",
+            ));
         }
     }
     dc.set(document.uri, diagnostics);
