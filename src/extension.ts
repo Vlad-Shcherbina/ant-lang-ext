@@ -205,6 +205,17 @@ function refreshDiagnostics(document: vscode.TextDocument, dc: vscode.Diagnostic
                                 "Unrecognized argument",
                             ));
                         }
+                    } else if (arg.kind == "number") {
+                        // TODO: this doesn't catch "4.2"
+                        if (isNaN(parseInt(parts[i + 1]))) {
+                            let start = parts.slice(0, i + 1).join(' ').length + 1;
+                            diagnostics.push(new vscode.Diagnostic(
+                                new vscode.Range(line_no, start, line_no, start + parts[i + 1].length),
+                                "Should be a number",
+                            ));
+                        }
+                    } else {
+                        let _: never = arg;
                     }
                 }
                 if (parts.length - 1 > args.length) {
