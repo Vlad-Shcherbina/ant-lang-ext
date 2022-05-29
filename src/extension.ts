@@ -175,22 +175,58 @@ function refreshDiagnostics(document: vscode.TextDocument, dc: vscode.Diagnostic
         return;
     }
     let diagnostics = [];
-    for (let i = 0; i < document.lineCount; i++) {
-        let line = document.lineAt(i).text;
-        if (line === '' && i == document.lineCount - 1) {
+    for (let line_no = 0; line_no < document.lineCount; line_no++) {
+        let line = document.lineAt(line_no).text;
+        let idx = line.indexOf(';');
+        if (idx !== -1) {
+            line = line.substring(0, idx).trimEnd();
+        }
+        if (line === '' && line_no == document.lineCount - 1) {
             continue;  // empty last line is not a problem
         }
         let parts = line.split(' ');
         let found = false;
         for (let [cmd, args] of grammar) {
             if (cmd === parts[0]) {
+                for (let i = 0; i < args.length && i < parts.length - 1; i++) {
+                    let arg = args[i];
+                    if (arg.kind === "enum") {
+                        let arg_found = false;
+                        for (let v of arg.values) {
+                            if (v === parts[i + 1]) {
+                                arg_found = true;
+                                break;
+                            }
+                        }
+                        if (!arg_found) {
+                            let start = parts.slice(0, i + 1).join(' ').length + 1;
+                            diagnostics.push(new vscode.Diagnostic(
+                                new vscode.Range(line_no, start, line_no, start + parts[i + 1].length),
+                                "Unrecognized argument",
+                            ));
+                        }
+                    }
+                }
+                if (parts.length - 1 > args.length) {
+                    let start = parts.slice(0, args.length + 1).join(' ').length + 1;
+                    diagnostics.push(new vscode.Diagnostic(
+                        new vscode.Range(line_no, start, line_no, line.length),
+                        "Extra argument",
+                    ));
+                }
+                if (parts.length - 1 < args.length) {
+                    diagnostics.push(new vscode.Diagnostic(
+                        new vscode.Range(line_no, line.length, line_no, line.length),
+                        "Not enough arguments",
+                    ));
+                }
                 found = true;
                 break;
             }
         }
         if (!found) {
             diagnostics.push(new vscode.Diagnostic(
-                new vscode.Range(i, 0, i, parts[0].length),
+                new vscode.Range(line_no, 0, line_no, parts[0].length),
                 "Unrecognized command",
             ));
         }
