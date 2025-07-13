@@ -8,7 +8,7 @@
 		},
 		{
 			"name": "keyword.control.ant",
-			"match": "\\b(Sense|Move|PickUp|Flip|Turn|Drop)\\b"
+			"match": "\\b(Sense|Move|PickUp|Flip|Turn|Drop|Mark)\\b"
 		},
 		{
 			"name": "constant.numeric.ant",
