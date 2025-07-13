@@ -9,10 +9,10 @@ importers:
   .:
     devDependencies:
       '@types/node':
-        specifier: ^8.10.25
+        specifier: ^8.10.66
         version: 8.10.66
       '@types/vscode':
-        specifier: ^1.67.0
+        specifier: ^1.102.0
         version: 1.102.0
 
 packages:
