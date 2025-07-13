@@ -4,7 +4,7 @@
     "description": "Description of my extension",
     "version": "0.0.1",
     "engines": {
-        "vscode": "^1.67.0"
+        "vscode": "^1.102.0"
     },
     "categories": [
         "Programming Languages"
@@ -37,11 +37,13 @@
     },
     "scripts": {
         "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./"
+        "watch": "tsc -watch -p ./",
+        "package": "vsce package --no-dependencies --allow-missing-repository"
     },
     "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad",
     "devDependencies": {
         "@types/node": "^8.10.66",
-        "@types/vscode": "^1.102.0"
+        "@types/vscode": "^1.102.0",
+        "@vscode/vsce": "^3.6.0"
     }
 }
