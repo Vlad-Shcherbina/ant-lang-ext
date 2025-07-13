@@ -14,7 +14,7 @@ const grammar: [string, Place[]][] = [
         { kind: "number" },
         { kind: "enum", values: [
             "Friend", "Foe", "FriendWithFood", "FoeWithFood", "Food", "Rock",
-            "Marker",  // TODO: it has an argument: "Marker 1"
+            "Marker",  // it has an argument: "Marker 1", anchor: RcJtj9Cx
             "FoeMarker", "Home", "FoeHome"]},
     ]],
     ["Mark", [
@@ -218,7 +218,9 @@ function refreshDiagnostics(document: vscode.TextDocument, dc: vscode.Diagnostic
                         let _: never = arg;
                     }
                 }
-                if (parts.length - 1 > args.length) {
+                // Hack: skip "extra argument" diagnostics if there is a "Marker", anchor: RcJtj9Cx
+                let skip_extra = parts.length >= 2 && parts[parts.length - 2] === "Marker";
+                if (!skip_extra && parts.length - 1 > args.length) {
                     let start = parts.slice(0, args.length + 1).join(' ').length + 1;
                     diagnostics.push(new vscode.Diagnostic(
                         new vscode.Range(line_no, start, line_no, line.length),
